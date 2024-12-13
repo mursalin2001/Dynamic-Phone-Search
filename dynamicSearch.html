@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dynamic Search</title>
+</head>
+<body class="bg-gray-200">
+    <section>
+        <div class="m-10 p-10 bg-white rounded-lg shadow-md">
+            <label class="input input-bordered flex items-center">
+                <input 
+                    type="text" 
+                    id="text-field" 
+                    class="grow bg-gray-100 m-4 h-10 rounded-sm"  
+                    placeholder="Search" 
+                    oninput="handleInput(event)" 
+                />
+                <button onclick="search()" class="p-2 bg-blue-700 rounded-sm">Search</button>
+            </label>
+        </div>
+    </section>
+    <main>
+        <div id="div" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+           
+        </div>
+    </main>
+
+    <script>
+        const loadPhones = async (value) => {
+            let phones = await fetch(`https://openapi.programming-hero.com/api/phones?search=${value}`);
+            let res = await phones.json();
+            let phone = res.data;
+            displayPhone(phone);
+        };
+
+        const displayPhone = (phones) => {
+            const parentDiv = document.getElementById('div');
+            parentDiv.innerHTML = '';
+            phones.forEach((phone) => {
+                const div = document.createElement('div');
+                div.className = "m-4 p-4 bg-white rounded";
+                div.innerHTML = `
+                    <figure>
+                        <img src="${phone.image}" alt="Phone Image" />
+                    </figure>
+                    <div class="card-body">
+                        <h2 class="card-title">${phone.phone_name}</h2>
+                        <p>${phone.slug}</p>
+                        <div class="card-actions justify-end">
+                            <button class="bg-blue-600 p-2 rounded-lg">Buy Now</button>
+                        </div>
+                    </div>
+                `;
+                parentDiv.appendChild(div);
+            });
+        };
+
+        const handleInput = (event) => {
+            const value = event.target.value.trim();
+            loadPhones(value); 
+        };
+
+        function search() {
+            const text = document.getElementById("text-field");
+            const value = text.value.trim();
+            loadPhones(value); 
+            console.log(value);
+        }
+
+        loadPhones('');
+    </script>
+</body>
+</html>
